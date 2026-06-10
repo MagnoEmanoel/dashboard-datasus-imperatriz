@@ -48,8 +48,8 @@ vacinação_media = 0
 dados_prontos = False
 
 try:
-    df_ad = carregar_tabela("óbitos_adultos")
-    df_inf = carregar_tabela("óbitos_infantis")
+    df_ad = carregar_tabela("obitos_adultos")
+    df_inf = carregar_tabela("obitos_infantis")
     anos_ad = [c for c in df_ad.columns if c.isdigit()]
     anos_inf = [c for c in df_inf.columns if c.isdigit()]
     
@@ -129,16 +129,7 @@ if dados_prontos:
     st.markdown("---")
 else:
     st.error(f"Erro ao carregar dados: {erro_db}")
-    st.warning("A base de dados ainda não foi populada. Clique no botão abaixo para ingerir os dados.")
-    if st.button("Popular Banco de Dados Agora", type="primary"):
-        with st.spinner("Ingerindo dados... Isso pode demorar alguns segundos."):
-            import subprocess
-            try:
-                subprocess.run([sys.executable, "src/ingest.py"], check=True)
-                st.success("Dados populados com sucesso! Recarregando...")
-                st.rerun()
-            except Exception as ex:
-                st.error(f"Falha na ingestão: {ex}")
+    st.warning("A base de dados ainda não foi populada. Execute a ingestão de dados para visualizar os KPIs.")
     st.markdown("---")
 
 # secao com informacoes sobre o painel e o município
