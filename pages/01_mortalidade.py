@@ -4,21 +4,21 @@ import pandas as pd
 import sys
 import os
 
-# Adiciona o diretório raiz ao PYTHONPATH
+# coloca a pasta raiz no path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.database import carregar_tabela, criar_engine
 from src.charts import injetar_custom_css, aplicar_estilo_layout, obter_paleta_cores
 
-# Configuração de página (Sem emojis)
+# configuracao da pagina
 st.set_page_config(page_title="Mortalidade Evitavel | DATASUS", layout="wide")
 st.markdown(injetar_custom_css(), unsafe_allow_html=True)
 
-# Cores e conexão
+# cores e conexao com o banco
 colors = obter_paleta_cores()
 _, db_type = criar_engine()
 
-# Título da página
+# titulo
 st.title("Mortalidade Evitavel")
 st.caption(f"Fonte: SIM (Sistema de Informacao sobre Mortalidade) / DATASUS | Banco de dados: {db_type.upper()}")
 st.markdown("---")
@@ -31,14 +31,14 @@ except Exception as e:
     st.info("Execute: python src/ingest.py no terminal.")
     st.stop()
 
-# Filtros Globais na Barra Lateral (Sem emojis)
+# filtros na barra lateral
 st.sidebar.markdown("### Filtros - Mortalidade")
 grupo_analise = st.sidebar.selectbox("Selecione o grupo etario", ["Ambos (Resumo)", "Infantil (< 5 anos)", "Jovem e Adulto (5 a 74 anos)"])
 
 if grupo_analise == "Ambos (Resumo)":
     st.subheader("Visao Geral - Mortalidade Evitavel em Imperatriz MA")
     
-    # KPIs resumidos
+    # calcula os totais pra mostrar nos cards
     anos = [c for c in df_ad.columns if c.isdigit()]
     total_ad = df_ad[anos].sum().sum()
     total_inf = df_inf[anos].sum().sum()
@@ -80,7 +80,7 @@ if grupo_analise == "Ambos (Resumo)":
         
     st.markdown("### Comparacao Temporal de Tendencias")
     
-    # Consolidando dados temporais
+    # junta os dados de ambos os grupos por ano
     obitos_ad_ano = df_ad[anos].sum()
     obitos_inf_ano = df_inf[anos].sum()
     
@@ -91,7 +91,7 @@ if grupo_analise == "Ambos (Resumo)":
         "Total": (obitos_ad_ano + obitos_inf_ano).values
     })
     
-    # Gráfico de linhas comparativo (Sem emojis, cores minimalistas do tema claro)
+    # grafico de linhas comparando adulto vs infantil
     fig = px.line(
         df_tendencia, 
         x="Ano", 

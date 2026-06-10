@@ -4,21 +4,21 @@ import pandas as pd
 import sys
 import os
 
-# Adiciona o diretório raiz ao PYTHONPATH
+# coloca a pasta raiz no path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.database import carregar_tabela, criar_engine
 from src.charts import injetar_custom_css, aplicar_estilo_layout, obter_paleta_cores
 
-# Configuração de página (Sem emojis)
+# configuracao da pagina
 st.set_page_config(page_title="Perfil de Nascimentos | DATASUS", layout="wide")
 st.markdown(injetar_custom_css(), unsafe_allow_html=True)
 
-# Cores e conexão
+# cores e conexao com o banco
 colors = obter_paleta_cores()
 _, db_type = criar_engine()
 
-# Título da página
+# titulo
 st.title("Perfil de Nascimentos")
 st.caption(f"Fonte: SINASC (Sistema de Informacao sobre Nascidos Vivos) / DATASUS | Banco de dados: {db_type.upper()}")
 st.markdown("---")

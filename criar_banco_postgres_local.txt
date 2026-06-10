@@ -1,0 +1,185 @@
+====================================================================
+  CRIACAO DO BANCO DE DADOS E TABELAS NO POSTGRESQL 18
+  Projeto: Dashboard DATASUS - Atencao Basica Imperatriz-MA
+====================================================================
+
+Antes de comecar, voce precisa ter o PostgreSQL 18 instalado e
+funcionando na sua maquina. Se ainda nao instalou, baixe no site
+oficial: https://www.postgresql.org/download/
+
+--------------------------------------------------------------------
+PASSO 1 - Abrir o terminal do PostgreSQL (psql)
+--------------------------------------------------------------------
+
+No Linux ou Mac, abra o terminal e digite:
+
+    sudo -u postgres psql
+
+No Windows, procure o "SQL Shell (psql)" no menu Iniciar.
+
+Vai pedir a senha do usuario postgres que voce definiu na instalacao.
+
+--------------------------------------------------------------------
+PASSO 2 - Criar o banco de dados
+--------------------------------------------------------------------
+
+Dentro do psql, digite:
+
+    CREATE DATABASE datasus_imperatriz;
+
+Depois conecte no banco que acabou de criar:
+
+    \c datasus_imperatriz
+
+--------------------------------------------------------------------
+PASSO 3 - Criar a tabela de obitos adultos (5 a 74 anos)
+--------------------------------------------------------------------
+
+Essa tabela guarda os dados de mortalidade evitavel por causa,
+separados por ano. Os dados vem do SIM (Sistema de Informacao
+sobre Mortalidade) do DATASUS.
+
+CREATE TABLE obitos_adultos (
+    causa TEXT NOT NULL,
+    "2020" INTEGER DEFAULT 0,
+    "2021" INTEGER DEFAULT 0,
+    "2022" INTEGER DEFAULT 0,
+    "2023" INTEGER DEFAULT 0,
+    "2024" INTEGER DEFAULT 0
+);
+
+Os nomes das colunas de ano ficam entre aspas duplas porque
+no PostgreSQL numeros nao podem ser nomes de coluna sem aspas.
+
+--------------------------------------------------------------------
+PASSO 4 - Criar a tabela de obitos infantis (menores de 5 anos)
+--------------------------------------------------------------------
+
+Mesma logica da tabela anterior, mas para criancas menores de 5 anos.
+
+CREATE TABLE obitos_infantis (
+    causa TEXT NOT NULL,
+    "2020" INTEGER DEFAULT 0,
+    "2021" INTEGER DEFAULT 0,
+    "2022" INTEGER DEFAULT 0,
+    "2023" INTEGER DEFAULT 0,
+    "2024" INTEGER DEFAULT 0
+);
+
+--------------------------------------------------------------------
+PASSO 5 - Criar a tabela de internacoes hospitalares (SIH)
+--------------------------------------------------------------------
+
+Essa tabela armazena as internacoes por capitulo da CID-10.
+Os dados cobrem de 2020 a 2026 porque o SIH tem dados mais
+recentes que os outros sistemas.
+
+CREATE TABLE internacoes (
+    capitulo_cid TEXT NOT NULL,
+    "2020" INTEGER DEFAULT 0,
+    "2021" INTEGER DEFAULT 0,
+    "2022" INTEGER DEFAULT 0,
+    "2023" INTEGER DEFAULT 0,
+    "2024" INTEGER DEFAULT 0,
+    "2025" INTEGER DEFAULT 0,
+    "2026" INTEGER DEFAULT 0
+);
+
+--------------------------------------------------------------------
+PASSO 6 - Criar a tabela de nascidos vivos (SINASC)
+--------------------------------------------------------------------
+
+Aqui ficam os dados de nascidos vivos organizados pela faixa
+etaria da mae. Fonte: SINASC do DATASUS.
+
+CREATE TABLE sinasc_nascimentos (
+    faixa_etaria_mae TEXT NOT NULL,
+    "2020" INTEGER DEFAULT 0,
+    "2021" INTEGER DEFAULT 0,
+    "2022" INTEGER DEFAULT 0,
+    "2023" INTEGER DEFAULT 0,
+    "2024" INTEGER DEFAULT 0
+);
+
+--------------------------------------------------------------------
+PASSO 7 - Criar a tabela de cobertura vacinal (SI-PNI)
+--------------------------------------------------------------------
+
+Essa tabela tem as porcentagens de cobertura vacinal por vacina
+e por ano. Os valores sao decimais (ex: 84.54 significa 84,54%).
+
+CREATE TABLE vacinacao_cobertura (
+    ano TEXT NOT NULL,
+    "BCG" NUMERIC(6,2) DEFAULT 0,
+    "Hepatite B idade <= 30 dias" NUMERIC(6,2) DEFAULT 0,
+    "Rotavirus Humano" NUMERIC(6,2) DEFAULT 0,
+    "Meningococo C" NUMERIC(6,2) DEFAULT 0,
+    "Hepatite B" NUMERIC(6,2) DEFAULT 0,
+    "Penta" NUMERIC(6,2) DEFAULT 0,
+    "Pneumococica" NUMERIC(6,2) DEFAULT 0,
+    "Poliomielite" NUMERIC(6,2) DEFAULT 0,
+    "Poliomielite 4 anos" NUMERIC(6,2) DEFAULT 0,
+    "Febre Amarela" NUMERIC(6,2) DEFAULT 0,
+    "Hepatite A" NUMERIC(6,2) DEFAULT 0,
+    "Pneumococica(1 ref)" NUMERIC(6,2) DEFAULT 0,
+    "Meningococo C (1 ref)" NUMERIC(6,2) DEFAULT 0,
+    "Poliomielite(1 ref)" NUMERIC(6,2) DEFAULT 0,
+    "Triplice Viral D1" NUMERIC(6,2) DEFAULT 0,
+    "Triplice Viral D2" NUMERIC(6,2) DEFAULT 0,
+    "Tetra Viral(SRC+VZ)" NUMERIC(6,2) DEFAULT 0,
+    "DTP" NUMERIC(6,2) DEFAULT 0,
+    "DTP REF (4 e 6 anos)" NUMERIC(6,2) DEFAULT 0,
+    "Triplice Bacte(DTP)(1 ref)" NUMERIC(6,2) DEFAULT 0,
+    "Sarampo" NUMERIC(6,2) DEFAULT 0,
+    "Haemophilus influenzae b" NUMERIC(6,2) DEFAULT 0,
+    "Dupla adulto e dTpa gestante" NUMERIC(6,2) DEFAULT 0,
+    "dTpa gestante" NUMERIC(6,2) DEFAULT 0,
+    "Tetravalente(DTP/Hib)(TETRA)" NUMERIC(6,2) DEFAULT 0,
+    "Varicela" NUMERIC(6,2) DEFAULT 0
+);
+
+--------------------------------------------------------------------
+PASSO 8 - Conferir se as tabelas foram criadas
+--------------------------------------------------------------------
+
+Ainda dentro do psql, digite:
+
+    \dt
+
+Esse comando lista todas as tabelas do banco. Voce deve ver:
+
+    obitos_adultos
+    obitos_infantis
+    internacoes
+    sinasc_nascimentos
+    vacinacao_cobertura
+
+--------------------------------------------------------------------
+PASSO 9 - Configurar o arquivo .env do projeto
+--------------------------------------------------------------------
+
+Na pasta raiz do projeto, crie o arquivo .env com as credenciais
+do seu banco PostgreSQL local. O formato eh assim:
+
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_NAME=datasus_imperatriz
+    DB_USER=seu_usuario
+    DB_PASSWORD=sua_senha
+    DB_SSLMODE=
+
+Troque os valores de usuario e senha pelos que voce configurou.
+Esse arquivo nao vai pro GitHub porque esta no .gitignore.
+
+--------------------------------------------------------------------
+PASSO 10 - Popular as tabelas com os dados dos CSV
+--------------------------------------------------------------------
+
+Com o ambiente virtual Python ativado, rode no terminal:
+
+    python src/ingest.py
+
+Esse script le os arquivos CSV da pasta data/raw/, trata os dados
+e salva nas tabelas que voce acabou de criar no PostgreSQL.
+
+====================================================================

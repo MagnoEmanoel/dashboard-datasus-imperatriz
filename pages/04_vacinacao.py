@@ -4,21 +4,21 @@ import pandas as pd
 import sys
 import os
 
-# Adiciona o diretório raiz ao PYTHONPATH
+# coloca a pasta raiz no path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.database import carregar_tabela, criar_engine
 from src.charts import injetar_custom_css, aplicar_estilo_layout, obter_paleta_cores
 
-# Configuração de página (Sem emojis)
+# configuracao da pagina
 st.set_page_config(page_title="Cobertura Vacinal | DATASUS", layout="wide")
 st.markdown(injetar_custom_css(), unsafe_allow_html=True)
 
-# Cores e conexão
+# cores e conexao com o banco
 colors = obter_paleta_cores()
 _, db_type = criar_engine()
 
-# Título da página
+# titulo
 st.title("Cobertura Vacinal")
 st.caption(f"Fonte: SI-PNI — Sistema de Informacoes do Programa Nacional de Imunizacao / DATASUS | Banco de dados: {db_type.upper()}")
 st.markdown("---")
@@ -136,7 +136,7 @@ try:
             color_discrete_sequence=[colors["vacinacao"]]
         )
         
-        # Adiciona linha de meta ideal (95%)
+        # linha de meta de 95% que eh o ideal
         fig.add_hline(y=meta_cobertura, line_dash="dash", line_color=colors["mortalidade_infantil"], annotation_text="Meta Ideal (95%)", annotation_position="top left")
         aplicar_estilo_layout(fig, title=f"Cobertura Vacinal: {vacina_selecionada}", x_title="Ano", y_title="Cobertura (%)")
         st.plotly_chart(fig, use_container_width=True)

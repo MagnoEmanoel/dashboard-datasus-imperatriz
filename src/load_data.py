@@ -1,23 +1,19 @@
 import pandas as pd
 import os
 
-# Base path for raw data
+# caminho da pasta com os CSV originais
 DATA_RAW = os.path.join("data", "raw")
 
 
 def ler_csv_limpo(caminho, col_index_name):
     """
-    Carrega e limpa arquivos CSV exportados do DATASUS (TabNet/TABWIN).
-    
-    Características do tratamento:
-    - Lê com separador ';' e encoding 'latin1'.
-    - Remove linhas nulas ou vazias.
-    - Filtra rodapés típicos do DATASUS (linhas que começam com 'Fonte' ou 'Nota').
-    - Remove a linha de 'Total'.
-    - Trata números no formato brasileiro (ex: '1.250' -> 1250, ',' para '.' e '-' para '0').
+    Le e limpa os arquivos CSV que foram exportados do DATASUS.
+    Os CSV do TabNet vem com separador ';', encoding latin1,
+    linhas de rodape com notas tecnicas e numeros no formato BR.
+    Essa funcao trata tudo isso e devolve um DataFrame limpo.
     """
     if not os.path.exists(caminho):
-        # Fallback para caso o script seja rodado de dentro da pasta 'src' ou 'pages'
+        # tenta achar o arquivo se o script foi rodado de outra pasta
         caminho_alternativo = os.path.join("..", caminho)
         if os.path.exists(caminho_alternativo):
             caminho = caminho_alternativo
@@ -26,52 +22,52 @@ def ler_csv_limpo(caminho, col_index_name):
             
     df = pd.read_csv(caminho, sep=";", encoding="latin1", engine="python")
     
-    # Limpa espaços nas colunas e linhas
+    # tira espacos extras dos nomes das colunas
     df.columns = [c.strip() for c in df.columns]
     
-    # Descobre a primeira coluna
+    # pega o nome da primeira coluna
     first_col = df.columns[0]
     
-    # Remove linhas onde a primeira coluna é nula
+    # tira linhas onde a primeira coluna ta vazia
     df = df.dropna(subset=[first_col])
     
-    # Converte a primeira coluna para string para aplicar filtros de texto
+    # transforma a primeira coluna em texto pra poder filtrar
     df[first_col] = df[first_col].astype(str).str.strip()
     
-    # Filtra linhas de notas técnicas e fontes do DATASUS
+    # remove as linhas de notas e fontes que o DATASUS coloca no rodape
     df = df[~df[first_col].str.startswith("Fonte:", na=False)]
     df = df[~df[first_col].str.startswith("Nota:", na=False)]
     df = df[~df[first_col].str.startswith("Notas:", na=False)]
     df = df[~df[first_col].str.startswith("1. O total", na=False)] # observações comuns
     
-    # Filtra linhas que sejam totalmente vazias ou contendo apenas hifens/traços na primeira coluna
+    # remove linhas vazias que sobraram
     df = df[df[first_col] != ""]
     
-    # Remove linha "Total" (case insensitive)
+    # tira a linha de Total que o TabNet sempre coloca
     df = df[df[first_col].str.lower() != "total"]
     
-    # Renomeia a primeira coluna para o nome padrão solicitado
+    # renomeia a primeira coluna pro nome padrao que a gente quer
     df = df.rename(columns={first_col: col_index_name})
     
-    # Trata colunas de dados (numéricas)
+    # agora trata as colunas numericas
     for col in df.columns:
         if col != col_index_name:
-            # Converte a coluna para string para podermos limpar
+            # converte pra string pra poder limpar os caracteres
             col_str = df[col].astype(str).str.strip()
             
-            # Remove pontos de milhares (ex: '1.250' -> '1250')
+            # tira os pontos de milhar (ex: '1.250' vira '1250')
             col_str = col_str.str.replace(".", "", regex=False)
             
-            # Substitui o hífen '-' por '0' (representação do DATASUS para valor zerado)
+            # no DATASUS o '-' significa zero
             col_str = col_str.str.replace("-", "0", regex=False)
             
-            # Substitui vírgula por ponto para valores decimais
+            # troca virgula por ponto pra funcionar como decimal
             col_str = col_str.str.replace(",", ".", regex=False)
             
-            # Converte para numérico. Se falhar, preenche com 0
+            # converte pra numero, se der erro coloca 0
             df[col] = pd.to_numeric(col_str, errors="coerce").fillna(0)
             
-            # Se for coluna de ano ou se todos forem inteiros, converte para int
+            # se eh coluna de ano ou so tem inteiro, converte pra int
             if col.isdigit() or df[col].round().eq(df[col]).all():
                 df[col] = df[col].astype(int)
                 
@@ -79,30 +75,30 @@ def ler_csv_limpo(caminho, col_index_name):
 
 
 def carregar_obitos_adultos():
-    """Carrega óbitos evitáveis de 5 a 74 anos (SIM)."""
+    """Carrega os obitos evitaveis de 5 a 74 anos do SIM."""
     caminho = os.path.join(DATA_RAW, "obitos_evitaveis_5_a_74.csv")
     return ler_csv_limpo(caminho, "causa")
 
 
 def carregar_obitos_infantis():
-    """Carrega óbitos evitáveis menores de 5 anos (SIM infantil)."""
+    """Carrega os obitos evitaveis de menores de 5 anos."""
     caminho = os.path.join(DATA_RAW, "obitos_evitaveis_5.csv")
     return ler_csv_limpo(caminho, "causa")
 
 
 def carregar_internacoes():
-    """Carrega internações hospitalares por capítulo CID-10 (SIH)."""
+    """Carrega as internacoes por capitulo CID-10 do SIH."""
     caminho = os.path.join(DATA_RAW, "sih_internacoes.csv")
     return ler_csv_limpo(caminho, "capitulo_cid")
 
 
 def carregar_sinasc():
-    """Carrega nascidos vivos por faixa etária da mãe (SINASC)."""
+    """Carrega nascidos vivos por faixa etaria da mae do SINASC."""
     caminho = os.path.join(DATA_RAW, "sinasc_maes.csv")
     return ler_csv_limpo(caminho, "faixa_etaria_mae")
 
 
 def carregar_vacinacao():
-    """Carrega cobertura vacinal por ano e imunobiológico (SI-PNI)."""
+    """Carrega a cobertura vacinal por ano do SI-PNI."""
     caminho = os.path.join(DATA_RAW, "vacinacao.csv")
     return ler_csv_limpo(caminho, "ano")
