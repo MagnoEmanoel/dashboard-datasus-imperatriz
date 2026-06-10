@@ -20,13 +20,13 @@ _, db_type = criar_engine()
 
 # titulo
 st.title("Cobertura Vacinal")
-st.caption(f"Fonte: SI-PNI — Sistema de Informacoes do Programa Nacional de Imunizacao / DATASUS | Banco de dados: {db_type.upper()}")
+st.caption(f"Fonte: SI-PNI — Sistema de Informacoes do Programa Nacional de Imunização / DATASUS | Banco de dados: {db_type.upper()}")
 st.markdown("---")
 
 try:
-    df_vac = carregar_tabela("vacinacao_cobertura")
+    df_vac = carregar_tabela("vacinação_cobertura")
 except Exception as e:
-    st.error("Erro ao conectar ao banco de dados ou carregar tabelas de vacinacao. Verifique se realizou a ingestao de dados.")
+    st.error("Erro ao conectar ao banco de dados ou carregar tabelas de vacinação. Verifique se realizou a ingestão de dados.")
     st.info("Execute: python src/ingest.py no terminal.")
     st.stop()
 
@@ -88,7 +88,7 @@ try:
 <div class="row g-4 mb-4">
 <!-- Card 1: Maior Cobertura Recente -->
 <div class="col-12 col-md-4">
-<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['vacinacao']} !important; border-radius: 8px; background-color: #ffffff;">
+<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['vacinação']} !important; border-radius: 8px; background-color: #ffffff;">
 <div class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em; margin-bottom: 8px;">Maior Cobertura ({ultimo_ano})</div>
 <div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{valor_max:.1f}%</div>
 <div class="text-secondary mt-3 font-sans" style="font-size: 11px;">Vacina: <b>{vacina_max}</b></div>
@@ -130,10 +130,10 @@ try:
             df_vac,
             x="ano",
             y=vacina_selecionada,
-            title=f"Evolucao da Cobertura Vacinal - {vacina_selecionada}",
+            title=f"Evolução da Cobertura Vacinal - {vacina_selecionada}",
             labels={"ano": "Ano", vacina_selecionada: "Cobertura (%)"},
             markers=True,
-            color_discrete_sequence=[colors["vacinacao"]]
+            color_discrete_sequence=[colors["vacinação"]]
         )
         
         # linha de meta de 95% que eh o ideal
@@ -154,7 +154,7 @@ try:
     </div>
     <div class="col-12 col-md-6">
         <div class="p-3 bg-light border border-light rounded" style="border-radius: 6px;">
-            <span class="fw-bold text-dark d-block mb-1">Ponto de Atencao</span>
+            <span class="fw-bold text-dark d-block mb-1">Ponto de Atenção</span>
             <p class="mb-0 leading-normal">{v_info['menor']}</p>
         </div>
     </div>
@@ -164,7 +164,7 @@ try:
         )
         
         # Tabela dos dados específicos
-        st.markdown(f"#### Dados Historicos — {vacina_selecionada}")
+        st.markdown(f"#### Dados Históricos — {vacina_selecionada}")
         
         df_exib_tab = df_vac[["ano", vacina_selecionada]].copy()
         df_exib_tab["Avaliação"] = df_exib_tab[vacina_selecionada].apply(lambda x: "Meta Atingida" if x >= 95 else "Abaixo da Meta")
@@ -215,8 +215,8 @@ try:
 <div class="card p-4 border-light shadow-sm mt-4" style="border-left: 4px solid {colors['text_main']} !important; border-radius: 8px; background-color: #ffffff;">
     <div class="d-flex gap-3 text-secondary font-sans" style="font-size: 13px; line-height: 1.6;">
         <div>
-            <strong class="text-dark d-block mb-1 uppercase text-uppercase" style="font-size: 12px; font-weight: 700; letter-spacing: -0.01em;">Importante: Atencao Basica e Cobertura Vacinal</strong>
-            Manter as taxas de cobertura acima de 95% e crucial para garantir a imunidade coletiva e evitar a reintroducao de doencas erradicadas. O acompanhamento continuado destes indicadores orienta acoes estrategicas de busca ativa pelas equipes de saude primaria.
+            <strong class="text-dark d-block mb-1 uppercase text-uppercase" style="font-size: 12px; font-weight: 700; letter-spacing: -0.01em;">Importante: Atenção Básica e Cobertura Vacinal</strong>
+            Manter as taxas de cobertura acima de 95% e crucial para garantir a imunidade coletiva e evitar a reintroducao de doencas erradicadas. O acompanhamento continuado destes indicadores orienta acoes estrategicas de busca ativa pelas equipes de saude primária.
         </div>
     </div>
 </div>
@@ -225,4 +225,4 @@ try:
     )
 
 except Exception as e:
-    st.error(f"Erro ao processar dados de vacinacao: {e}")
+    st.error(f"Erro ao processar dados de vacinação: {e}")
