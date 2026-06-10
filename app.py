@@ -72,7 +72,6 @@ try:
     dados_prontos = True
 except Exception as e:
     dados_prontos = False
-    erro_db = e
 
 if dados_prontos:
     # monta os 4 cards com os numeros principais
@@ -128,17 +127,8 @@ if dados_prontos:
     )
     st.markdown("---")
 else:
-    st.error(f"Erro ao carregar dados: {erro_db}")
-    st.warning("A base de dados ainda não foi populada. Clique no botão abaixo para ingerir os dados.")
-    if st.button("Popular Banco de Dados Agora", type="primary"):
-        with st.spinner("Ingerindo dados... Isso pode demorar alguns segundos."):
-            import subprocess
-            try:
-                subprocess.run([sys.executable, "src/ingest.py"], check=True)
-                st.success("Dados populados com sucesso! Recarregando...")
-                st.rerun()
-            except Exception as ex:
-                st.error(f"Falha na ingestão: {ex}")
+    st.warning("A base de dados ainda não foi populada. Por favor, execute a ingestão de dados no terminal para visualizar os KPIs.")
+    st.info("Para popular: python src/ingest.py")
     st.markdown("---")
 
 # secao com informacoes sobre o painel e o município
