@@ -20,7 +20,10 @@ def ler_csv_limpo(caminho, col_index_name):
         else:
             raise FileNotFoundError(f"Arquivo não encontrado em: {caminho}")
             
-    df = pd.read_csv(caminho, sep=";", encoding="latin1", engine="python")
+    try:
+        df = pd.read_csv(caminho, sep=";", encoding="utf-8", engine="python")
+    except UnicodeDecodeError:
+        df = pd.read_csv(caminho, sep=";", encoding="latin1", engine="python")
     
     # tira espacos extras dos nomes das colunas
     df.columns = [c.strip() for c in df.columns]
