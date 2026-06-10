@@ -2,24 +2,24 @@ import streamlit as st
 import sys
 import os
 
-# Adiciona o diretório raiz ao PYTHONPATH
+# coloca a pasta raiz no path pra achar os modulos
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from src.charts import injetar_custom_css, obter_paleta_cores
 from src.database import carregar_tabela, criar_engine
 
-# Configuração de página Streamlit (Sem emojis)
+# configuracao da pagina do Streamlit
 st.set_page_config(
     page_title="Painel de Saude - Imperatriz MA",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Injetar estilo CSS premium e Bootstrap CDN
+# aplica o CSS customizado e carrega as cores
 st.markdown(injetar_custom_css(), unsafe_allow_html=True)
 colors = obter_paleta_cores()
 
-# Barra Lateral (Sidebar clássica limpa, sem emojis)
+# menu lateral com informacoes do projeto
 with st.sidebar:
     st.markdown("### Painel de Saude")
     st.markdown("---")
@@ -30,7 +30,7 @@ with st.sidebar:
     _, db_type = criar_engine()
     st.markdown(f"Conexao ativa: **{db_type.upper()}**")
 
-# Título Principal (Estilo DashboardGeral.tsx)
+# titulo principal da pagina
 st.title("Painel de Saude Publica")
 st.markdown(
     """
@@ -42,7 +42,7 @@ st.markdown(
 )
 st.markdown("---")
 
-# Tentar carregar dados
+# tenta puxar os dados do banco pra mostrar os numeros
 total_obitos = 0
 total_internacoes = 0
 total_nascimentos = 0
@@ -76,7 +76,7 @@ except Exception as e:
     dados_prontos = False
 
 if dados_prontos:
-    # 4 Cartões Horizontais usando Grid do Bootstrap 5 (Layout de DashboardGeral.tsx)
+    # monta os 4 cards com os numeros principais
     st.markdown(
         f"""
 <div class="row g-4 mb-5">
@@ -133,7 +133,7 @@ else:
     st.info("Para popular: python src/ingest.py")
     st.markdown("---")
 
-# Bento-box de 2 colunas usando Bootstrap para "Sobre" e "Informações Municipais"
+# secao com informacoes sobre o painel e o municipio
 st.markdown(
     f"""
 <div class="row g-4">

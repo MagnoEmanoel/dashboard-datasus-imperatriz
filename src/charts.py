@@ -1,16 +1,16 @@
 import plotly.io as pio
 
-# Paleta de cores baseada em ESPECIFICACOES_DESIGN.md (Tema Claro Minimalista e Sofisticado)
+# paleta de cores do projeto (tema claro e limpo)
 COLORS = {
-    "bg_main": "rgba(250, 249, 246, 0.4)", # Off-white quente e suave
-    "bg_sidebar": "#ffffff",               # Sidebar branca absoluto
-    "bg_card": "#ffffff",                  # Superfícies/Cards brancos
-    "text_main": "#0f172a",                # Slate-900 (chumbo escuro)
-    "text_muted": "#64748b",               # Slate-600 (cinza médio)
-    "text_accent": "#0f172a",              # Slate-900
-    "border": "#f1f5f9",                   # Borda Slate-100 superfina
+    "bg_main": "rgba(250, 249, 246, 0.4)", # fundo principal
+    "bg_sidebar": "#ffffff",               # fundo da sidebar
+    "bg_card": "#ffffff",                  # fundo dos cards
+    "text_main": "#0f172a",                # texto principal escuro
+    "text_muted": "#64748b",               # texto secundario cinza
+    "text_accent": "#0f172a",              # texto destaque
+    "border": "#f1f5f9",                   # borda dos elementos
     
-    # Cores temáticas de dados
+    # cores de cada area do dashboard
     "mortalidade_adulto": "#0d9488",       # Teal
     "mortalidade_infantil": "#e11d48",     # Rose
     "internacoes": "#4f46e5",              # Indigo
@@ -18,7 +18,7 @@ COLORS = {
     "nascimentos_amber": "#f59e0b",        # Amber
     "vacinacao": "#0d9488",                 # Teal
     
-    # Retrocompatibilidade com as chaves antigas das páginas
+    # nomes antigos que as paginas ainda usam
     "primary": "#0d9488",                  # Teal (mortalidade/vacinação)
     "secondary": "#4f46e5",                # Indigo (internações)
     "success": "#10b981",                  # Emerald (nascimentos)
@@ -27,13 +27,13 @@ COLORS = {
     "info": "#64748b",
     "neutral": "#64748b",
     
-    # Paleta sequencial baseada em Teal (mortalidade/vacinação)
+    # escala de cores pra graficos de calor
     "seq_blue": [
         "#ccfbf1", "#99f6e4", "#5eead4", "#2dd4bf", 
         "#0d9488", "#0f766e", "#115e59", "#134e4a"
     ],
     
-    # Paleta categórica para gráficos
+    # cores pra graficos com varias categorias
     "categorical": [
         "#0d9488", "#4f46e5", "#10b981", "#e11d48", 
         "#f59e0b", "#06b6d4", "#2563eb", "#db2777"
@@ -42,14 +42,14 @@ COLORS = {
 
 
 def obter_paleta_cores():
-    """Retorna a paleta de cores do sistema de design."""
+    """Retorna as cores do projeto."""
     return COLORS
 
 
 def aplicar_estilo_layout(fig, title="", x_title="", y_title="", hovermode="x unified"):
     """
-    Aplica configurações visuais consistentes e minimalistas (Light Theme).
-    Modifica fontes (Inter/JetBrains Mono), cores de fundo e formatos de grade.
+    Aplica o visual padrao nos graficos do Plotly.
+    Configura fontes, cores e formatacao pra ficar tudo no mesmo estilo.
     """
     fig.update_layout(
         template="plotly_white",
@@ -83,7 +83,7 @@ def aplicar_estilo_layout(fig, title="", x_title="", y_title="", hovermode="x un
         }
     )
 
-    # Configuração dos eixos
+    # configura os eixos X e Y
     fig.update_xaxes(
         title_text=x_title,
         title_font={"family": "Inter, sans-serif", "size": 11, "color": COLORS["text_muted"]},
@@ -108,20 +108,20 @@ def aplicar_estilo_layout(fig, title="", x_title="", y_title="", hovermode="x un
 
 
 def injetar_custom_css():
-    """Retorna uma string HTML/CSS para customizar a interface do Streamlit com o visual claro minimalista usando Bootstrap."""
+    """CSS customizado pra deixar o Streamlit com a cara do projeto. Usa Bootstrap 5 pra ajudar no layout."""
     return f"""
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
         
-        /* Reset de fontes e fundo geral */
+        /* reseta fontes e fundo geral do app */
         html, body, [class*="css"], [data-testid="stAppViewContainer"] {{
             font-family: 'Inter', sans-serif;
             background-color: #FAF9F6 !important; /* Off-white quente e acolhedor */
             color: {COLORS["text_main"]} !important;
         }}
         
-        /* Títulos e cabeçalhos */
+        /* titulos */
         h1, h2, h3, h4, h5, h6 {{
             font-family: 'Inter', sans-serif;
             font-weight: 600;
@@ -129,18 +129,18 @@ def injetar_custom_css():
             letter-spacing: -0.02em;
         }}
         
-        /* Animação fade-in suave */
+        /* animacao de entrada suave */
         @keyframes fadeIn {{
             from {{ opacity: 0; transform: translateY(6px); }}
             to {{ opacity: 1; transform: translateY(0); }}
         }}
         
-        /* Aplica animação nas áreas de visualização de conteúdo */
+        /* aplica a animacao nos blocos de conteudo */
         [data-testid="stVerticalBlock"] > div {{
             animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }}
         
-        /* Cartões de Métricas Minimalistas e de Alto Contraste */
+        /* estilo dos cards de metricas */
         .metric-card {{
             background-color: {COLORS["bg_card"]};
             border-radius: 4px;
@@ -176,7 +176,7 @@ def injetar_custom_css():
             font-family: 'Inter', sans-serif;
         }}
         
-        /* Customizações da Barra Lateral (Sidebar Clássica Limpa) */
+        /* sidebar */
         [data-testid="stSidebar"] {{
             background-color: {COLORS["bg_sidebar"]} !important;
             border-right: 1px solid {COLORS["border"]};
@@ -188,7 +188,7 @@ def injetar_custom_css():
             color: {COLORS["text_main"]} !important;
         }}
         
-        /* Elementos de Abas (Tabs) */
+        /* abas */
         button[data-baseweb="tab"] {{
             background-color: transparent !important;
             color: {COLORS["text_muted"]} !important;
@@ -204,7 +204,7 @@ def injetar_custom_css():
             font-weight: 600 !important;
         }}
         
-        /* Inputs, Selectbox e Controles de Entrada */
+        /* campos de selecao e filtros */
         div[data-baseweb="select"] > div {{
             background-color: #ffffff !important;
             border-color: #e2e8f0 !important;
@@ -218,19 +218,19 @@ def injetar_custom_css():
             font-size: 13px !important;
         }}
         
-        /* Slider (JetBrains Mono nos ticks do ano) */
+        /* slider de anos */
         div[data-testid="stSlider"] {{
             font-family: 'JetBrains Mono', monospace !important;
         }}
         
-        /* Tabelas de Dados e Dataframes */
+        /* tabelas de dados */
         div[data-testid="stDataFrame"] {{
             background-color: #ffffff !important;
             border: 1px solid {COLORS["border"]} !important;
             border-radius: 4px;
         }}
         
-        /* Notas explicativas (Blockquotes) */
+        /* notas e citacoes */
         blockquote {{
             background-color: #ffffff !important;
             border-left: 3px solid {COLORS["text_muted"]} !important;
@@ -248,7 +248,7 @@ def injetar_custom_css():
             line-height: 1.5 !important;
         }}
         
-        /* Info Boxes formatadas de acordo com as especificações */
+        /* caixas de informacao */
         .stInfo, div[data-testid="stNotification"] {{
             background-color: #ffffff !important;
             border: 1px solid {COLORS["border"]} !important;
@@ -257,7 +257,7 @@ def injetar_custom_css():
             font-size: 12px !important;
         }}
         
-        /* Botões Estilo Minimalista */
+        /* botoes */
         .stButton>button {{
             background-color: #ffffff;
             color: {COLORS["text_main"]};

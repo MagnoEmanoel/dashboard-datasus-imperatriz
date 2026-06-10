@@ -16,5 +16,5 @@ Thumbs.db
 # dados processados (gerados automaticamente)
 data/processed/
 
-# banco de dados local SQLite (fallback)
+# banco de dados local SQLite
 *.db
