@@ -63,7 +63,7 @@ try:
     anos_nas = [c for c in df_nas.columns if c.isdigit()]
     total_nascimentos = int(df_nas[anos_nas].sum().sum())
     
-    df_vac = carregar_tabela("vacinação_cobertura")
+    df_vac = carregar_tabela("vacinacao_cobertura")
     if len(df_vac) > 0:
         vacinas = [c for c in df_vac.columns if c != "ano"]
         ultimo_ano_df = df_vac.sort_values(by="ano", ascending=False).iloc[0]
@@ -72,7 +72,7 @@ try:
     dados_prontos = True
 except Exception as e:
     dados_prontos = False
-    erro_db = e
+    erro_db = e 
 
 if dados_prontos:
     # monta os 4 cards com os numeros principais
@@ -114,7 +114,7 @@ if dados_prontos:
 
 <!-- Card 4: Cobertura Vacinal -->
 <div class="col-12 col-md-6 col-lg-3">
-<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['vacinação']} !important; border-radius: 8px; background-color: #ffffff;">
+<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['vacinacao']} !important; border-radius: 8px; background-color: #ffffff;">
 <div class="d-flex justify-content-between align-items-center mb-3">
 <span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em;">Cobertura Vacinal Geral</span>
 </div>

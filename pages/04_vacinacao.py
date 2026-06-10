@@ -24,7 +24,7 @@ st.caption(f"Fonte: SI-PNI — Sistema de Informacoes do Programa Nacional de Im
 st.markdown("---")
 
 try:
-    df_vac = carregar_tabela("vacinação_cobertura")
+    df_vac = carregar_tabela("vacinacao_cobertura")
 except Exception as e:
     st.error("Erro ao conectar ao banco de dados ou carregar tabelas de vacinação. Verifique se realizou a ingestão de dados.")
     st.info("Execute: python src/ingest.py no terminal.")
@@ -88,7 +88,7 @@ try:
 <div class="row g-4 mb-4">
 <!-- Card 1: Maior Cobertura Recente -->
 <div class="col-12 col-md-4">
-<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['vacinação']} !important; border-radius: 8px; background-color: #ffffff;">
+<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['vacinacao']} !important; border-radius: 8px; background-color: #ffffff;">
 <div class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em; margin-bottom: 8px;">Maior Cobertura ({ultimo_ano})</div>
 <div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{valor_max:.1f}%</div>
 <div class="text-secondary mt-3 font-sans" style="font-size: 11px;">Vacina: <b>{vacina_max}</b></div>
@@ -133,7 +133,7 @@ try:
             title=f"Evolução da Cobertura Vacinal - {vacina_selecionada}",
             labels={"ano": "Ano", vacina_selecionada: "Cobertura (%)"},
             markers=True,
-            color_discrete_sequence=[colors["vacinação"]]
+            color_discrete_sequence=[colors["vacinacao"]]
         )
         
         # linha de meta de 95% que eh o ideal
