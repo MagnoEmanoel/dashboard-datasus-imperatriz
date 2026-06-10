@@ -11,7 +11,7 @@ from src.database import carregar_tabela, criar_engine
 from src.charts import injetar_custom_css, aplicar_estilo_layout, obter_paleta_cores
 
 # configuracao da pagina
-st.set_page_config(page_title="Internacoes SIH | DATASUS", layout="wide")
+st.set_page_config(page_title="Internações SIH | DATASUS", layout="wide")
 st.markdown(injetar_custom_css(), unsafe_allow_html=True)
 
 # cores e conexao com o banco
@@ -19,14 +19,14 @@ colors = obter_paleta_cores()
 _, db_type = criar_engine()
 
 # titulo
-st.title("Internacoes Hospitalares - SIH")
+st.title("Internações Hospitalares - SIH")
 st.caption(f"Fonte: SIH (Sistema de Informacoes Hospitalares) / DATASUS | Banco de dados: {db_type.upper()}")
 st.markdown("---")
 
 try:
     df_int = carregar_tabela("internacoes")
 except Exception as e:
-    st.error("Erro ao conectar ao banco de dados ou carregar tabelas de internacoes. Verifique se realizou a ingestao de dados.")
+    st.error("Erro ao conectar ao banco de dados ou carregar tabelas de internacoes. Verifique se realizou a ingestão de dados.")
     st.info("Execute: python src/ingest.py no terminal.")
     st.stop()
 
@@ -48,7 +48,7 @@ try:
         st.markdown(
             f"""
             <div class="metric-card" style="border-left-color: {colors['internacoes']};">
-                <div class="metric-title">Internacoes Acumuladas</div>
+                <div class="metric-title">Internações Acumuladas</div>
                 <div class="metric-value">{total_acumulado:,}</div>
                 <div class="metric-subtitle">Total geral registrado (2020-2026)</div>
             </div>
@@ -72,7 +72,7 @@ try:
             <div class="metric-card" style="border-left-color: {colors['success']};">
                 <div class="metric-title">Volume da Causa Lider</div>
                 <div class="metric-value">{causa_lider_total:,}</div>
-                <div class="metric-subtitle">Internacoes ({causa_lider_total/total_acumulado*100:.1f}% do total geral)</div>
+                <div class="metric-subtitle">Internações ({causa_lider_total/total_acumulado*100:.1f}% do total geral)</div>
             </div>
             """,
             unsafe_allow_html=True
@@ -81,10 +81,10 @@ try:
     st.markdown("---")
     
     # Filtro integrado de busca
-    st.markdown("### Pesquisa e Analise por Capitulo CID-10")
+    st.markdown("### Pesquisa e Análise por Capitulo CID-10")
     
     # Barra deslizante de alternância rápida de anos (Controle de tempo)
-    ano_selecionado = st.select_slider("Selecione o ano para analise no ranking", options=sorted(anos))
+    ano_selecionado = st.select_slider("Selecione o ano para análise no ranking", options=sorted(anos))
     
     # Caixa de busca em tempo real (Filtro por CID-10)
     busca_cid = st.text_input("Filtrar CID-10 por nome ou capitulo...", value="")
@@ -96,7 +96,7 @@ try:
             df_filtrado_busca["capitulo_cid"].str.lower().str.contains(busca_cid.lower())
         ]
         
-    tab_ranking, tab_tendencia = st.tabs(["Ranking por Ano", "Comparativo e Tendencias"])
+    tab_ranking, tab_tendencia = st.tabs(["Ranking por Ano", "Comparativo e Tendências"])
     
     with tab_ranking:
         if len(df_filtrado_busca) > 0:
@@ -109,11 +109,11 @@ try:
                 x=ano_selecionado,
                 y="capitulo_cid",
                 orientation="h",
-                title=f"Internacoes por Capitulo CID-10 - Ano {ano_selecionado}",
+                title=f"Internações por Capitulo CID-10 - Ano {ano_selecionado}",
                 color_discrete_sequence=[colors["internacoes"]],
-                labels={"capitulo_cid": "Capitulo CID-10", ano_selecionado: "Internacoes"}
+                labels={"capitulo_cid": "Capitulo CID-10", ano_selecionado: "Internações"}
             )
-            aplicar_estilo_layout(fig_rank, title=f"Internacoes por Capitulo CID-10 em {ano_selecionado}", x_title="Numero de Internacoes", y_title="")
+            aplicar_estilo_layout(fig_rank, title=f"Internações por Capitulo CID-10 em {ano_selecionado}", x_title="Número de Internações", y_title="")
             st.plotly_chart(fig_rank, use_container_width=True)
             
             # Tabela ordenada
@@ -121,7 +121,7 @@ try:
             df_ranking_tabela = df_ranking.sort_values(by=ano_selecionado, ascending=False)
             df_ranking_tabela["Percentual (%)"] = (df_ranking_tabela[ano_selecionado] / df_ranking_tabela[ano_selecionado].sum() * 100).round(2)
             st.dataframe(
-                df_ranking_tabela.rename(columns={"capitulo_cid": "Capitulo CID-10", ano_selecionado: "Internacoes"}), 
+                df_ranking_tabela.rename(columns={"capitulo_cid": "Capitulo CID-10", ano_selecionado: "Internações"}), 
                 use_container_width=True, 
                 hide_index=True
             )
@@ -129,7 +129,7 @@ try:
             st.info("Nenhum registro encontrado para o filtro digitado.")
 
     with tab_tendencia:
-        st.markdown("### Evolucao Temporal por Capitulo CID-10")
+        st.markdown("### Evolução Temporal por Capitulo CID-10")
         
         capitulos_disponiveis = df_filtrado_busca["capitulo_cid"].unique()
         top_3_causas = df_filtrado_busca.sort_values(by="Total_Causa", ascending=False).head(3)["capitulo_cid"].tolist()
@@ -147,22 +147,22 @@ try:
                 id_vars=["capitulo_cid"],
                 value_vars=anos,
                 var_name="Ano",
-                value_name="Internacoes"
+                value_name="Internações"
             )
             
             fig_trend = px.line(
                 df_melted,
                 x="Ano",
-                y="Internacoes",
+                y="Internações",
                 color="capitulo_cid",
-                title="Evolucao Temporal das Internacoes",
+                title="Evolução Temporal das Internações",
                 markers=True,
                 color_discrete_sequence=colors["categorical"]
             )
-            aplicar_estilo_layout(fig_trend, title="Evolucao Temporal das Internacoes por CID-10", x_title="Ano", y_title="Internacoes")
+            aplicar_estilo_layout(fig_trend, title="Evolução Temporal das Internações por CID-10", x_title="Ano", y_title="Internações")
             st.plotly_chart(fig_trend, use_container_width=True)
             
-            st.markdown("#### Tabela Comparativa de Tendencias")
+            st.markdown("#### Tabela Comparativa de Tendências")
             df_pivot = df_filtrado_grafico[["capitulo_cid"] + anos]
             st.dataframe(df_pivot, use_container_width=True, hide_index=True)
         else:

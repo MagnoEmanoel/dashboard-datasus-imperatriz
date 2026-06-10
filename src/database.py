@@ -5,12 +5,22 @@ from dotenv import load_dotenv
 # carrega as credenciais do banco que estao no arquivo .env
 load_dotenv()
 
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "datasus_imperatriz")
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
-DB_SSLMODE = os.getenv("DB_SSLMODE", "")
+
+def _get_secret(key, default=""):
+    """Pega a credencial dos secrets do Streamlit Cloud ou do .env local."""
+    try:
+        import streamlit as st
+        return st.secrets.get(key, os.getenv(key, default))
+    except Exception:
+        return os.getenv(key, default)
+
+
+DB_HOST = _get_secret("DB_HOST", "localhost")
+DB_PORT = _get_secret("DB_PORT", "5432")
+DB_NAME = _get_secret("DB_NAME", "datasus_imperatriz")
+DB_USER = _get_secret("DB_USER", "postgres")
+DB_PASSWORD = _get_secret("DB_PASSWORD", "postgres")
+DB_SSLMODE = _get_secret("DB_SSLMODE", "")
 
 
 def criar_engine():

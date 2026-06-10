@@ -20,13 +20,13 @@ _, db_type = criar_engine()
 
 # titulo
 st.title("Perfil de Nascimentos")
-st.caption(f"Fonte: SINASC (Sistema de Informacao sobre Nascidos Vivos) / DATASUS | Banco de dados: {db_type.upper()}")
+st.caption(f"Fonte: SINASC (Sistema de Informação sobre Nascidos Vivos) / DATASUS | Banco de dados: {db_type.upper()}")
 st.markdown("---")
 
 try:
     df_sinasc = carregar_tabela("sinasc_nascimentos")
 except Exception as e:
-    st.error("Erro ao conectar ao banco de dados ou carregar tabelas de nascimentos. Verifique se realizou a ingestao de dados.")
+    st.error("Erro ao conectar ao banco de dados ou carregar tabelas de nascimentos. Verifique se realizou a ingestão de dados.")
     st.info("Execute: python src/ingest.py no terminal.")
     st.stop()
 
@@ -34,7 +34,7 @@ try:
     anos = [c for c in df_sinasc.columns if c.isdigit()]
     
     # Seletor interativo de ano no topo (Controle de tempo minimalista)
-    st.markdown("### Selecione o Periodo de Analise")
+    st.markdown("### Selecione o Período de Análise")
     ano_sel = st.selectbox("Selecione o ano para filtrar os indicadores", options=sorted(anos, reverse=True))
     
     # Filtrar dados para o ano selecionado
@@ -163,14 +163,14 @@ try:
         markers=True,
         color_discrete_sequence=colors["categorical"]
     )
-    aplicar_estilo_layout(fig_lin, title="Evolucao Temporal dos Nascimentos (2020-2024)", x_title="Ano", y_title="Nascidos Vivos")
+    aplicar_estilo_layout(fig_lin, title="Evolução Temporal dos Nascimentos (2020-2024)", x_title="Ano", y_title="Nascidos Vivos")
     st.plotly_chart(fig_lin, use_container_width=True)
     
     st.markdown("""
 > **Nota Epidemiologica**: O monitoramento constante das gestacoes em adolescentes (10-19 anos) 
-> e central para as equipes de Saude da Familia (eSF). Uma tendencia de queda nesta faixa sugere eficacia de programas
+> e central para as equipes de Saúde da Familia (eSF). Uma tendencia de queda nesta faixa sugere eficacia de programas
 > de planejamento familiar e de educacao sexual nas escolas. Em paralelo, o crescimento de partos em mulheres com
-> mais de 35 anos impoe um planejamento de pre-natal de alto risco mais estruturado.
+> mais de 35 anos impoe um planejamento de pré-natal de alto risco mais estruturado.
     """)
         
 except Exception as e:

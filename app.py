@@ -10,7 +10,7 @@ from src.database import carregar_tabela, criar_engine
 
 # configuracao da pagina do Streamlit
 st.set_page_config(
-    page_title="Painel de Saude - Imperatriz MA",
+    page_title="Painel de Saúde - Imperatriz MA",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -21,21 +21,19 @@ colors = obter_paleta_cores()
 
 # menu lateral com informacoes do projeto
 with st.sidebar:
-    st.markdown("### Painel de Saude")
+    st.markdown("### Painel de Saúde")
     st.markdown("---")
-    st.markdown("**Municipio:** Imperatriz - MA")
+    st.markdown("**Município:** Imperatriz - MA")
     st.markdown("**IBGE:** 210530")
-    st.markdown("**Periodo Analisado:** 2020 - 2026")
+    st.markdown("**Período Analisado:** 2020 - 2026")
     st.markdown("---")
-    _, db_type = criar_engine()
-    st.markdown(f"Conexao ativa: **{db_type.upper()}**")
 
 # titulo principal da pagina
-st.title("Painel de Saude Publica")
+st.title("Painel de Saúde Pública")
 st.markdown(
     """
     <p class="text-secondary mb-4" style="font-size: 14px; margin-top: -10px;">
-        Atencao Primaria a Saude — Municipio de Imperatriz, Maranhao
+        Atenção Primária à Saúde — Município de Imperatriz, Maranhão
     </p>
     """,
     unsafe_allow_html=True
@@ -43,19 +41,19 @@ st.markdown(
 st.markdown("---")
 
 # tenta puxar os dados do banco pra mostrar os numeros
-total_obitos = 0
+total_óbitos = 0
 total_internacoes = 0
 total_nascimentos = 0
-vacinacao_media = 0
+vacinação_media = 0
 dados_prontos = False
 
 try:
-    df_ad = carregar_tabela("obitos_adultos")
-    df_inf = carregar_tabela("obitos_infantis")
+    df_ad = carregar_tabela("óbitos_adultos")
+    df_inf = carregar_tabela("óbitos_infantis")
     anos_ad = [c for c in df_ad.columns if c.isdigit()]
     anos_inf = [c for c in df_inf.columns if c.isdigit()]
     
-    total_obitos = int(df_ad[anos_ad].sum().sum() + df_inf[anos_inf].sum().sum())
+    total_óbitos = int(df_ad[anos_ad].sum().sum() + df_inf[anos_inf].sum().sum())
     
     df_int = carregar_tabela("internacoes")
     anos_int = [c for c in df_int.columns if c.isdigit()]
@@ -65,11 +63,11 @@ try:
     anos_nas = [c for c in df_nas.columns if c.isdigit()]
     total_nascimentos = int(df_nas[anos_nas].sum().sum())
     
-    df_vac = carregar_tabela("vacinacao_cobertura")
+    df_vac = carregar_tabela("vacinação_cobertura")
     if len(df_vac) > 0:
         vacinas = [c for c in df_vac.columns if c != "ano"]
         ultimo_ano_df = df_vac.sort_values(by="ano", ascending=False).iloc[0]
-        vacinacao_media = float(ultimo_ano_df[vacinas].mean())
+        vacinação_media = float(ultimo_ano_df[vacinas].mean())
         
     dados_prontos = True
 except Exception as e:
@@ -84,9 +82,9 @@ if dados_prontos:
 <div class="col-12 col-md-6 col-lg-3">
 <div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['mortalidade_infantil']} !important; border-radius: 8px; background-color: #ffffff;">
 <div class="d-flex justify-content-between align-items-center mb-3">
-<span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em;">Obitos Evitaveis</span>
+<span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em;">Óbitos Evitáveis</span>
 </div>
-<div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{total_obitos:,}</div>
+<div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{total_óbitos:,}</div>
 <div class="text-secondary mt-3 font-sans" style="font-size: 11px;">SIM (2020 - 2024 acumulados)</div>
 </div>
 </div>
@@ -95,7 +93,7 @@ if dados_prontos:
 <div class="col-12 col-md-6 col-lg-3">
 <div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['internacoes']} !important; border-radius: 8px; background-color: #ffffff;">
 <div class="d-flex justify-content-between align-items-center mb-3">
-<span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em;">Internacoes</span>
+<span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em;">Internações</span>
 </div>
 <div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{total_internacoes:,}</div>
 <div class="text-secondary mt-3 font-sans" style="font-size: 11px;">SIH (2020 - 2026 acumulados)</div>
@@ -115,12 +113,12 @@ if dados_prontos:
 
 <!-- Card 4: Cobertura Vacinal -->
 <div class="col-12 col-md-6 col-lg-3">
-<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['vacinacao']} !important; border-radius: 8px; background-color: #ffffff;">
+<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['vacinação']} !important; border-radius: 8px; background-color: #ffffff;">
 <div class="d-flex justify-content-between align-items-center mb-3">
 <span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em;">Cobertura Vacinal Geral</span>
 </div>
-<div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{vacinacao_media:.2f}%</div>
-<div class="text-secondary mt-3 font-sans" style="font-size: 11px;">SI-PNI (Media de imunizacao local)</div>
+<div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{vacinação_media:.2f}%</div>
+<div class="text-secondary mt-3 font-sans" style="font-size: 11px;">SI-PNI (Média de imunização local)</div>
 </div>
 </div>
 </div>
@@ -129,11 +127,11 @@ if dados_prontos:
     )
     st.markdown("---")
 else:
-    st.warning("A base de dados ainda nao foi populada. Por favor, execute a ingestao de dados no terminal para visualizar os KPIs.")
+    st.warning("A base de dados ainda não foi populada. Por favor, execute a ingestão de dados no terminal para visualizar os KPIs.")
     st.info("Para popular: python src/ingest.py")
     st.markdown("---")
 
-# secao com informacoes sobre o painel e o municipio
+# secao com informacoes sobre o painel e o município
 st.markdown(
     f"""
 <div class="row g-4">
@@ -144,13 +142,13 @@ st.markdown(
 <h5 class="text-dark font-sans fw-bold mb-0">Sobre este Painel</h5>
 </div>
 <p class="text-secondary leading-relaxed font-sans mb-4" style="font-size: 13px;">
-Acompanhe a consolidacao historica dos indicadores publicos da saude primaria de Imperatriz (MA). Este painel foi construido de forma limpa e objetiva para facilitar a analise dos gestores e da equipe cientifica. Os dados provem das fontes unificadas de dados abertos do DATASUS (Ministerio da Saude):
+Acompanhe a consolidação histórica dos indicadores públicos da saúde primária de Imperatriz (MA). Este painel foi construído de forma limpa e objetiva para facilitar a análise dos gestores e da equipe científica. Os dados provêm das fontes unificadas de dados abertos do DATASUS (Ministério da Saúde):
 </p>
 
 <div class="row g-3">
 <div class="col-12 col-md-6">
 <div class="p-3 bg-light border border-light rounded" style="border-radius: 6px;">
-<div class="text-xs fw-bold text-dark font-sans mb-1" style="font-size: 12px;">Mortalidade Evitavel</div>
+<div class="text-xs fw-bold text-dark font-sans mb-1" style="font-size: 12px;">Mortalidade Evitável</div>
 <p class="text-secondary mb-0 font-sans" style="font-size: 11px; line-height: 1.5;">
 Consolidação contínua do SIM (Sistema de Informação sobre Mortalidade), tratando de causas controláveis através de ações corretas preventivas locais.
 </p>
@@ -158,7 +156,7 @@ Consolidação contínua do SIM (Sistema de Informação sobre Mortalidade), tra
 </div>
 <div class="col-12 col-md-6">
 <div class="p-3 bg-light border border-light rounded" style="border-radius: 6px;">
-<div class="text-xs fw-bold text-dark font-sans mb-1" style="font-size: 12px;">Internacoes Hospitalares</div>
+<div class="text-xs fw-bold text-dark font-sans mb-1" style="font-size: 12px;">Internações Hospitalares</div>
 <p class="text-secondary mb-0 font-sans" style="font-size: 11px; line-height: 1.5;">
 Métricas originadas do SIH (Sistema de Informações Hospitalares) organizadas por capítulos da Classificação Internacional de Doenças (CID-10).
 </p>
@@ -197,25 +195,20 @@ Considerada o "Portal da Amazônia" e o segundo município mais populoso do esta
 
 <div class="border-top border-light pt-3 space-y-2 font-sans" style="font-size: 11px;">
 <div class="d-flex justify-content-between text-secondary mb-2">
-<span>Codigo IBGE</span>
+<span>Código IBGE</span>
 <span class="font-monospace text-dark fw-bold">210530</span>
 </div>
 <div class="d-flex justify-content-between text-secondary mb-2">
-<span>Macro-regiao</span>
-<span class="text-dark fw-bold">Sul do Maranhao</span>
+<span>Macrorregião</span>
+<span class="text-dark fw-bold">Sul do Maranhão</span>
 </div>
 <div class="d-flex justify-content-between text-secondary mb-0">
-<span>Populacao Estimada</span>
+<span>População Estimada</span>
 <span class="font-monospace text-dark fw-bold">~273.000 hab.</span>
 </div>
 </div>
 </div>
 
-<div class="mt-4 p-2 bg-light border border-light rounded d-flex align-items-center gap-2" style="border-radius: 6px;">
-<div class="rounded-circle bg-dark" style="width: 6px; height: 6px;"></div>
-<span class="text-uppercase text-dark fw-bold font-sans" style="font-size: 9px; letter-spacing: 0.08em;">
-Conexao Ativa: DATASUS ({db_type.upper()})
-</span>
 </div>
 </div>
 </div>
