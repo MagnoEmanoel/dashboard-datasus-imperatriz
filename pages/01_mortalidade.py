@@ -24,8 +24,8 @@ st.caption(f"Fonte: SIM (Sistema de Informação sobre Mortalidade) / DATASUS | 
 st.markdown("---")
 
 try:
-    df_ad = carregar_tabela("óbitos_adultos")
-    df_inf = carregar_tabela("óbitos_infantis")
+    df_ad = carregar_tabela("obitos_adultos")
+    df_inf = carregar_tabela("obitos_infantis")
 except Exception as e:
     st.error("Erro ao conectar ao banco de dados ou carregar tabelas de óbitos. Verifique se realizou a ingestão de dados.")
     st.info("Execute: python src/ingest.py no terminal.")
