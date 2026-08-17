@@ -7,12 +7,15 @@ load_dotenv()
 
 
 def _get_secret(key, default=""):
-    """Pega a credencial dos secrets do Streamlit Cloud ou do .env local."""
+    """Pega a credencial do .env local ou dos secrets do Streamlit Cloud."""
+    value = os.getenv(key)
+    if value:
+        return value
     try:
         import streamlit as st
-        return st.secrets.get(key, os.getenv(key, default))
+        return st.secrets.get(key, default)
     except Exception:
-        return os.getenv(key, default)
+        return default
 
 
 DB_HOST = _get_secret("DB_HOST", "localhost")
