@@ -1,42 +1,41 @@
 import plotly.io as pio
 
-# paleta de cores do projeto (tema claro e limpo)
+# paleta de cores do projeto (Streamlit Design System - Figma Specs)
 COLORS = {
-    "bg_main": "#f8fafc",                  # fundo principal
+    "bg_main": "#f8fafc",                  # fundo principal limpo
     "bg_sidebar": "#ffffff",               # fundo da sidebar
     "bg_card": "#ffffff",                  # fundo dos cards
-    "text_main": "#0f172a",                # texto principal escuro
-    "text_muted": "#64748b",               # texto secundario cinza
-    "text_accent": "#0f172a",              # texto destaque
-    "border": "#f1f5f9",                   # borda dos elementos
+    "text_main": "#31333f",                # texto principal oficial do Streamlit
+    "text_muted": "#808495",               # texto secundario cinza
+    "text_accent": "#111827",              # texto destaque
+    "border": "#e6e8eb",                   # borda dos elementos
 
-    # cores de cada area do dashboard
-    "mortalidade_adulto": "#0d9488",       # Teal
-    "mortalidade_infantil": "#e11d48",     # Rose
-    "internacoes": "#4f46e5",              # Indigo
-    "nascimentos_emerald": "#10b981",      # Emerald
-    "nascimentos_amber": "#f59e0b",        # Amber
-    "vacinacao": "#0d9488",                 # Teal
+    # cores oficiais do Streamlit Design System
+    "primary": "#ff4b4b",                  # Streamlit Coral/Red
+    "secondary": "#1c83e1",                # Streamlit Blue
+    "success": "#00d4b1",                  # Emerald
+    "danger": "#ff4b4b",                   # Coral
+    "warning": "#ffbd45",                  # Amber
+    "info": "#1c83e1",                     # Blue
 
-    # nomes antigos que as paginas ainda usam
-    "primary": "#0d9488",                  # Teal (mortalidade/vacinação)
-    "secondary": "#4f46e5",                # Indigo (internações)
-    "success": "#10b981",                  # Emerald (nascimentos)
-    "danger": "#e11d48",                   # Rose (infantil)
-    "warning": "#f59e0b",                  # Amber (nascimentos)
-    "info": "#64748b",
-    "neutral": "#64748b",
+    # cores por area funcional
+    "mortalidade_adulto": "#00c0f2",       # Cyan
+    "mortalidade_infantil": "#ff4b4b",     # Coral
+    "internacoes": "#1c83e1",              # Blue
+    "nascimentos_emerald": "#00d4b1",      # Emerald
+    "nascimentos_amber": "#ffbd45",        # Amber
+    "vacinacao": "#ff4b4b",                 # Coral
 
-    # escala de cores pra graficos de calor
+    # escala de cores pra graficos
     "seq_blue": [
-        "#ccfbf1", "#99f6e4", "#5eead4", "#2dd4bf",
-        "#0d9488", "#0f766e", "#115e59", "#134e4a"
+        "#ffeae8", "#ffc7c2", "#ff9b93", "#ff6d63",
+        "#ff4b4b", "#d93838", "#b32727", "#8c1818"
     ],
 
-    # cores pra graficos com varias categorias
+    # cores para categorias (Streamlit Design System Palette)
     "categorical": [
-        "#0d9488", "#4f46e5", "#10b981", "#e11d48",
-        "#f59e0b", "#06b6d4", "#2563eb", "#db2777"
+        "#ff4b4b", "#1c83e1", "#00d4b1", "#ffbd45",
+        "#7d3ac1", "#00c0f2", "#e03131", "#2b8a3e"
     ]
 }
 
@@ -150,40 +149,99 @@ def injetar_custom_css():
             animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }}
 
-        /* estilo dos cards de metricas */
+        /* estilo dos cards de metricas (Streamlit Design System Figma) */
         .metric-card {{
             background-color: {COLORS["bg_card"]};
-            border-radius: 4px;
-            padding: 18px;
+            border-radius: 8px;
+            padding: 20px;
             border: 1px solid {COLORS["border"]};
-            border-left: 3px solid {COLORS["primary"]};
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            border-top: 3px solid {COLORS["primary"]};
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }}
         .metric-card:hover {{
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            border-color: #e2e8f0;
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
         }}
         .metric-title {{
-            font-size: 11px;
+            font-size: 12px;
             color: {COLORS["text_muted"]};
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }}
         .metric-value {{
-            font-size: 24px;
+            font-size: 26px;
             color: {COLORS["text_main"]};
             font-weight: 700;
-            margin-top: 4px;
+            margin-top: 6px;
             font-family: 'JetBrains Mono', monospace;
             letter-spacing: -0.03em;
         }}
         .metric-subtitle {{
-            font-size: 11px;
+            font-size: 12px;
             color: {COLORS["text_muted"]};
-            margin-top: 4px;
+            margin-top: 6px;
             font-family: 'Inter', sans-serif;
+        }}
+
+        /* Streamlit Native Tabs Component (Figma SDS style) */
+        button[data-baseweb="tab"] {{
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            color: {COLORS["text_muted"]} !important;
+            border-bottom: 2px solid transparent !important;
+            padding: 8px 16px !important;
+            transition: all 0.15s ease !important;
+        }}
+        button[data-baseweb="tab"][aria-selected="true"] {{
+            color: {COLORS["primary"]} !important;
+            font-weight: 600 !important;
+            border-bottom-color: {COLORS["primary"]} !important;
+            background: transparent !important;
+        }}
+
+        /* Streamlit Buttons (SDS style) */
+        .stButton > button {{
+            border-radius: 8px !important;
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            border: 1px solid {COLORS["border"]} !important;
+            transition: all 0.15s ease !important;
+        }}
+        .stButton > button:hover {{
+            border-color: {COLORS["primary"]} !important;
+            color: {COLORS["primary"]} !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        }}
+
+        /* Callouts & Alert Boxes (Figma SDS style) */
+        [data-testid="stAlert"] {{
+            border-radius: 8px !important;
+            border: 1px solid #d0e8f2 !important;
+            background-color: #e8f4f8 !important;
+            color: #1e3a8a !important;
+            padding: 12px 16px !important;
+            font-family: 'Inter', sans-serif !important;
+        }}
+
+        /* Sliders (Streamlit Red accent) */
+        [data-baseweb="slider"] [role="slider"] {{
+            background-color: {COLORS["primary"]} !important;
+            border-color: {COLORS["primary"]} !important;
+        }}
+        [data-baseweb="slider"] div[style*="background-color"] {{
+            background-color: {COLORS["primary"]} !important;
+        }}
+
+        /* Streamlit Dataframe & Table Styling (Clean Light Theme) */
+        [data-testid="stDataFrame"], [data-testid="stTable"] {{
+            background-color: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
         }}
 
         /* ============ SIDEBAR / NAVEGAÇÃO ============ */

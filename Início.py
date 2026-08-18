@@ -3,7 +3,7 @@ import pandas as pd
 import sys
 import os
 
-# configuracao da pagina do Streamlit (DEVE ser o primeiro comando)
+# Configuracao da pagina do Streamlit (DEVE ser o primeiro comando)
 st.set_page_config(
     page_title="Painel DATASUS - Gestão do SUS",
     layout="wide",
@@ -46,7 +46,6 @@ with st.sidebar:
     if current_mun_nome in mun_nomes:
         mun_index = mun_nomes.index(current_mun_nome)
     else:
-        # Padrão para Imperatriz se UF for MA, senão o primeiro da lista
         imperatriz_idx = next((i for i, m in enumerate(muns_uf) if m["id"] == "210530"), 0)
         mun_index = imperatriz_idx if uf_sel == "MA" else 0
         
@@ -60,21 +59,25 @@ with st.sidebar:
     st.markdown(f"**Código IBGE:** {mun_obj_sel['id']}")
     st.markdown("---")
 
-# Título Principal
-st.title("Painel de Gestão e Saúde Pública - SUS")
+# Cabeçalho Institucional Limpo e Profissional
 st.markdown(
     f"""
-    <p class="text-secondary mb-4" style="font-size: 14px; margin-top: -10px;">
-        Vigilância Epidemiológica, Atenção Primária e Infraestrutura de Saúde — <b>{st.session_state.mun_selecionado['nome']} ({st.session_state.uf_selecionada})</b>
-    </p>
+    <div style="padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0;">
+        <h1 style="font-size: 26px; font-weight: 700; color: #0f172a; margin: 0 0 6px 0; letter-spacing: -0.02em;">
+            Painel de Gestão e Saúde Pública - SUS
+        </h1>
+        <p style="font-size: 14px; color: #64748b; margin: 0; line-height: 1.5;">
+            Vigilância Epidemiológica, Atenção Primária, Infraestrutura de Saúde e Saneamento — 
+            <strong style="color: #0f172a;">{st.session_state.mun_selecionado['nome']} ({st.session_state.uf_selecionada})</strong>
+        </p>
+    </div>
     """,
     unsafe_allow_html=True
 )
-st.markdown("---")
 
 # Consulta os estabelecimentos do CNES
 try:
-    with st.spinner("Estamos buscando os dados..."):
+    with st.spinner("Buscando indicadores do CNES..."):
         df_cnes = consultar_cnes_estabelecimentos(st.session_state.mun_selecionado['id'])
 except Exception as e:
     st.error(f"Não foi possível obter os dados do CNES do Ministério da Saúde: {e}")
@@ -82,10 +85,8 @@ except Exception as e:
     df_cnes = pd.DataFrame()
 
 if not df_cnes.empty:
-    # Calcula KPIs
     total_estab = len(df_cnes)
     
-    # Garante tipo numérico para soma correta e livre de erros de NoneType/NaN
     def obter_soma_campo(col_name):
         col = df_cnes.get(col_name)
         if col is None:
@@ -94,59 +95,62 @@ if not df_cnes.empty:
 
     cirurgicos = obter_soma_campo('estabelecimento_possui_centro_cirurgico')
     obstetricos = obter_soma_campo('estabelecimento_possui_centro_obstetrico')
-    neonatais = obter_soma_campo('estabelecimento_possui_centro_neonatal')
     hospitalares = obter_soma_campo('estabelecimento_possui_atendimento_hospitalar')
 
+    # Grid de KPIs Limpos (Sem Gradientes ou Emojis)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.markdown(
+            f"""
+            <div class="metric-card" style="border-top: 3px solid #ff4b4b;">
+                <div class="metric-title">Total Estabelecimentos (CNES)</div>
+                <div class="metric-value">{total_estab}</div>
+                <div class="metric-subtitle">Unidades ativas cadastradas</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    with col2:
+        st.markdown(
+            f"""
+            <div class="metric-card" style="border-top: 3px solid #1c83e1;">
+                <div class="metric-title">Unidades Hospitalares</div>
+                <div class="metric-value">{int(hospitalares)}</div>
+                <div class="metric-subtitle">Com atendimento de internação</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    with col3:
+        st.markdown(
+            f"""
+            <div class="metric-card" style="border-top: 3px solid #00d4b1;">
+                <div class="metric-title">Centros Cirúrgicos</div>
+                <div class="metric-value">{int(cirurgicos)}</div>
+                <div class="metric-subtitle">Estruturas cirúrgicas ativas</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    with col4:
+        st.markdown(
+            f"""
+            <div class="metric-card" style="border-top: 3px solid #ffbd45;">
+                <div class="metric-title">Centros Obstétricos</div>
+                <div class="metric-value">{int(obstetricos)}</div>
+                <div class="metric-subtitle">Apoio a partos e urgências</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    st.markdown(
-        f"""
-<div class="row g-4 mb-5">
-<!-- Card 1: Total Estabelecimentos -->
-<div class="col-12 col-md-6 col-lg-3">
-<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['internacoes']} !important; border-radius: 8px; background-color: #ffffff;">
-<span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em; margin-bottom: 8px; display: block;">Total Estabelecimentos (CNES)</span>
-<div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{total_estab}</div>
-<div class="text-secondary mt-3 font-sans" style="font-size: 11px;">Registros ativos no cadastro local</div>
-</div>
-</div>
-
-<!-- Card 2: Leitos / Unidades Hospitalares -->
-<div class="col-12 col-md-6 col-lg-3">
-<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['mortalidade_infantil']} !important; border-radius: 8px; background-color: #ffffff;">
-<span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em; margin-bottom: 8px; display: block;">Unidades Hospitalares</span>
-<div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{int(hospitalares)}</div>
-<div class="text-secondary mt-3 font-sans" style="font-size: 11px;">Possuem atendimento de internação</div>
-</div>
-</div>
-
-<!-- Card 3: Centro Cirúrgico -->
-<div class="col-12 col-md-6 col-lg-3">
-<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['nascimentos_emerald']} !important; border-radius: 8px; background-color: #ffffff;">
-<span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em; margin-bottom: 8px; display: block;">Centros Cirúrgicos</span>
-<div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{int(cirurgicos)}</div>
-<div class="text-secondary mt-3 font-sans" style="font-size: 11px;">Estruturas de média/alta complexidade</div>
-</div>
-</div>
-
-<!-- Card 4: Centro Obstétrico -->
-<div class="col-12 col-md-6 col-lg-3">
-<div class="card p-4 border-light shadow-sm h-100" style="border-left: 4px solid {colors['nascimentos_amber']} !important; border-radius: 8px; background-color: #ffffff;">
-<span class="text-uppercase text-secondary fw-bold font-sans" style="font-size: 10px; letter-spacing: 0.08em; margin-bottom: 8px; display: block;">Centros Obstétricos</span>
-<div class="fs-2 fw-bold text-dark font-monospace" style="letter-spacing: -0.03em;">{int(obstetricos)}</div>
-<div class="text-secondary mt-3 font-sans" style="font-size: 11px;">Apoio a partos e urgências maternas</div>
-</div>
-</div>
-</div>
-        """,
-        unsafe_allow_html=True
-    )
-    st.markdown("---")
-    
-    st.subheader("Cadastro Nacional de Estabelecimentos de Saúde (CNES)")
+    # Tabela Institucional do CNES
+    st.markdown("<h3 style='font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 12px;'>Cadastro Nacional de Estabelecimentos de Saúde (CNES)</h3>", unsafe_allow_html=True)
     cnes_exib = df_cnes[["codigo_cnes", "nome_fantasia", "descricao_esfera_administrativa", "descricao_turno_atendimento", "bairro_estabelecimento"]].copy()
     cnes_exib.columns = ["CNES", "Nome Fantasia", "Esfera Administrativa", "Turno de Atendimento", "Bairro"]
     
-    # Garante tipo string e sem NaNs para evitar crash de segmentação no serializador PyArrow
     for col in cnes_exib.columns:
         cnes_exib[col] = cnes_exib[col].fillna("").astype(str)
         
@@ -154,62 +158,67 @@ if not df_cnes.empty:
 else:
     st.warning("Nenhum estabelecimento de saúde encontrado no CNES para esta localidade.")
 
-# secao informativa sobre o painel
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Seções do Painel (Sem emojis)
+st.markdown("<h3 style='font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 12px;'>Estrutura das Categorias de Dados</h3>", unsafe_allow_html=True)
+
+m1, m2, m3, m4 = st.columns(4)
+with m1:
+    st.markdown(
+        """
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; height: 100%;">
+            <div style="font-weight: 600; font-size: 13px; color: #0f172a; margin-bottom: 4px;">Vigilância e Meio Ambiente</div>
+            <p style="font-size: 11px; color: #64748b; margin: 0; line-height: 1.4;">
+                Análise epidemiológica de Dengue, Zika, Chikungunya e Febre Amarela.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+with m2:
+    st.markdown(
+        """
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; height: 100%;">
+            <div style="font-weight: 600; font-size: 13px; color: #0f172a; margin-bottom: 4px;">Vacinação</div>
+            <p style="font-size: 11px; color: #64748b; margin: 0; line-height: 1.4;">
+                Mapeamento de imunização, cobertura vacinal e doses aplicadas.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+with m3:
+    st.markdown(
+        """
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; height: 100%;">
+            <div style="font-weight: 600; font-size: 13px; color: #0f172a; margin-bottom: 4px;">Atenção Primária e Assistência</div>
+            <p style="font-size: 11px; color: #64748b; margin: 0; line-height: 1.4;">
+                Equipes de Saúde da Família, PMMB e indicadores do Previne Brasil.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+with m4:
+    st.markdown(
+        """
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; height: 100%;">
+            <div style="font-weight: 600; font-size: 13px; color: #0f172a; margin-bottom: 4px;">Saneamento e Nutrição</div>
+            <p style="font-size: 11px; color: #64748b; margin: 0; line-height: 1.4;">
+                Qualidade da água para consumo (SISAGUA) e acompanhamento no SISVAN.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+st.markdown("<br>", unsafe_allow_html=True)
 st.markdown(
-    f"""
-<div class="row g-4 mt-2">
-<!-- Coluna Esquerda: Sobre o Painel -->
-<div class="col-12">
-<div class="card p-4 border-light shadow-sm" style="background-color: #ffffff; border-radius: 8px;">
-<div class="border-bottom border-light pb-3 mb-3">
-<h5 class="text-dark font-sans fw-bold mb-0">Sobre este Painel Integrado por Categorias</h5>
-</div>
-<p class="text-secondary leading-relaxed font-sans mb-4" style="font-size: 13px;">
-Acompanhe os principais indicadores públicos do SUS a partir das categorias oficiais de dados abertos do Ministério da Saúde. Selecione o Estado e Município desejados no menu lateral para atualizar os relatórios de todas as páginas em tempo real. As categorias estão estruturadas da seguinte forma:
-</p>
-
-<div class="row g-3">
-<div class="col-12 col-md-6 col-lg-3">
-<div class="p-3 bg-light border border-light rounded h-100" style="border-radius: 6px;">
-<div class="text-xs fw-bold text-dark font-sans mb-1" style="font-size: 12px;">Vigilância e Meio Ambiente</div>
-<p class="text-secondary mb-0 font-sans" style="font-size: 11px; line-height: 1.5;">
-Análise de agravos compulsórios como as Arboviroses (Dengue, Zika, Chikungunya e Febre Amarela humana).
-</p>
-</div>
-</div>
-<div class="col-12 col-md-6 col-lg-3">
-<div class="p-3 bg-light border border-light rounded h-100" style="border-radius: 6px;">
-<div class="text-xs fw-bold text-dark font-sans mb-1" style="font-size: 12px;">Vacinação</div>
-<p class="text-secondary mb-0 font-sans" style="font-size: 11px; line-height: 1.5;">
-Mapeamento de imunização e dados de cobertura e doses aplicadas pelo PNI.
-</p>
-</div>
-</div>
-<div class="col-12 col-md-6 col-lg-3">
-<div class="p-3 bg-light border border-light rounded h-100" style="border-radius: 6px;">
-<div class="text-xs fw-bold text-dark font-sans mb-1" style="font-size: 12px;">Atenção Primária e Assistência</div>
-<p class="text-secondary mb-0 font-sans" style="font-size: 11px; line-height: 1.5;">
-Monitoramento de equipes, Mais Médicos (PMMB) e os indicadores do Programa Previne Brasil.
-</p>
-</div>
-</div>
-<div class="col-12 col-md-6 col-lg-3">
-<div class="p-3 bg-light border border-light rounded h-100" style="border-radius: 6px;">
-<div class="text-xs fw-bold text-dark font-sans mb-1" style="font-size: 12px;">Saneamento e Nutrição</div>
-<p class="text-secondary mb-0 font-sans" style="font-size: 11px; line-height: 1.5;">
-Vigilância da qualidade da água para consumo (SISAGUA) e acompanhamento nutricional da população (SISVAN).
-</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Footer -->
-<p class="text-center text-secondary mt-5 border-top border-light pt-4 font-sans" style="font-size: 10px; max-w: 700px; margin: 30px auto 0;">
-Origem dos dados: API de Dados Abertos do Ministério da Saúde. Mapeamento nacional atualizado em tempo real.
-</p>
-""",
+    """
+    <p style="text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+        Origem dos dados: API de Dados Abertos do Ministério da Saúde e Base de Dados do CNES (PostgreSQL).
+    </p>
+    """,
     unsafe_allow_html=True
 )
